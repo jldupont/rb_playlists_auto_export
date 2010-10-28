@@ -4,9 +4,13 @@
 #
 # Makefile for releasing the project
 #
-PRJ=rb_musync
-PKG=rb-musync
-DOC=http://www.systemical.com/doc/opensource/musync
+
+## <<< CUSTOMIZE HERE
+PRJ=rb_playlists_auto_export
+PKG=rb-playlists-auto-export
+DOC=http://www.systemical.com/doc/opensource/rb_playlists_auto_export
+## >>>
+
 VERSION:=`cat VERSION`
 
 DEFAULT_DISTRO=lucid
