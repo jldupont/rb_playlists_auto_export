@@ -48,6 +48,8 @@ mswitch.observe_mode=MSWITCH_OBSERVE_MODE
 
 #import agents._tester
 
+from helpers.playlists import *
+
 
 class PlaylistsAutoExportPlugin (rb.Plugin):
     """
@@ -115,7 +117,13 @@ class PlaylistsAutoExportPlugin (rb.Plugin):
     
     def on_selected(self, sourcelist, source):
         print "on_selected: %s, %s" % (sourcelist, source)
-        
+        ph=PlaylistsHelper(self.shell)
+        for l in ph.iter():
+            #print "playlist image: %s, name: %s" % (l[1], l[2])
+            name, source=ph.itemNameSource(l)
+            if name.lower()=="hpc":
+                print dir(source)
+                
     def on_drop_received(self, sourcelist, target, data):
         print "on_drop_received: sl: %s, target: %s, data: %s" % (sourcelist, target, data)
     
