@@ -81,6 +81,7 @@ class PlaylistsAutoExportPlugin (rb.Plugin):
         self.sp = shell.get_player()
         self.db=self.shell.props.db
         self.sl=shell.props.sourcelist
+        self.plm=shell.get_playlist_manager()
         
         ## We might have other signals to connect to in the future
         self.dbcb = (
@@ -93,6 +94,10 @@ class PlaylistsAutoExportPlugin (rb.Plugin):
         self.slcb = (
                      self.sl.connect("drop-received",  self.on_drop_received),
                      self.sl.connect("selected",       self.on_selected),
+                     )
+
+        self.plcb = (
+                     self.plm.connect("playlist-added", self.on_playlist_added),
                      )
         
         ## Distribute the vital RB objects around
@@ -112,8 +117,13 @@ class PlaylistsAutoExportPlugin (rb.Plugin):
             
         for id in self.slcb:
             self.sl.disconnect(id)
+            
+        for id in self.plcb:
+            self.plm.disconnect(id)
 
     ## ================================================  rb signal handlers
+    def on_playlist_added(self, manager, source):
+        print "playlist-added: %s" % source
     
     def on_selected(self, sourcelist, source):
         print "on_selected: %s, %s" % (sourcelist, source)
@@ -122,7 +132,9 @@ class PlaylistsAutoExportPlugin (rb.Plugin):
             #print "playlist image: %s, name: %s" % (l[1], l[2])
             name, source=ph.itemNameSource(l)
             if name.lower()=="hpc":
-                print dir(source)
+                for item in source.props.base_query_model:
+                    entry, _path=list(item)
+                    print entry
                 
     def on_drop_received(self, sourcelist, target, data):
         print "on_drop_received: sl: %s, target: %s, data: %s" % (sourcelist, target, data)
