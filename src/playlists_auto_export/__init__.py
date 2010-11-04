@@ -9,8 +9,9 @@
     - "devmode"
     - "tick"
     - "load_complete"
-    - "playlist"
+    - "playlist_added"
     - "playlist_created"
+    - "playlist_changed"
     
 """
 DEV_MODE=True
@@ -76,9 +77,9 @@ class PlaylistsAutoExportPlugin (rb.Plugin):
         self.song_entries={}
         self.sourcescb=[]
         
-        Bus.subscribe("__pluging__", "devmode?", self.hq_devmode)
-        Bus.subscribe("__pluging__", "appname?", self.hq_appname)
-        Bus.subscribe("__pluging__", "__tick__", self.h_tick)
+        Bus.subscribe(self.BUSNAME, "devmode?", self.hq_devmode)
+        Bus.subscribe(self.BUSNAME, "appname?", self.hq_appname)
+        Bus.subscribe(self.BUSNAME, "__tick__", self.h_tick)
 
     def activate (self, shell):
         """
@@ -139,7 +140,7 @@ class PlaylistsAutoExportPlugin (rb.Plugin):
             print "status-changed: %s" % source
     
     def on_playlist_added(self, manager, source):
-        Bus.pub(self.BUSNAME, "playlist", source)
+        Bus.pub(self.BUSNAME, "playlist_added", source)
         self.sourcescb.append(source.connect("status-changed", self.on_status_changed))
         print "playlist-added: %s" % source
         
@@ -170,15 +171,15 @@ class PlaylistsAutoExportPlugin (rb.Plugin):
         'load-complete' signal handler
         """
         self.load_complete=True
-        Bus.publish("__pluging__", "load_complete")
+        Bus.publish(self.BUSNAME, "load_complete")
 
     ## ================================================ message handlers
     
     def hq_appname(self):
-        Bus.publish("__pluging__", "appname", PLUGIN_NAME)
+        Bus.publish(self.BUSNAME, "appname", PLUGIN_NAME)
         
     def hq_devmode(self):
-        Bus.publish("__pluging__", "devmode", DEV_MODE)
+        Bus.publish(self.BUSNAME, "devmode", DEV_MODE)
 
     def h_tick(self, ticks_per_second, 
                second_marker, min_marker, hour_marker, day_marker,
