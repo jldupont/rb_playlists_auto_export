@@ -5,9 +5,12 @@
     
     MESSAGES OUT:
     =============
+    - "appname"
+    - "devmode"
     - "tick"
     - "load_complete"
-
+    - "playlist"
+    - "playlist_created"
     
 """
 DEV_MODE=True
@@ -56,8 +59,11 @@ class PlaylistsAutoExportPlugin (rb.Plugin):
     Must derive from rb.Plugin in order
     for RB to use the plugin
     """
+    BUSNAME="__pluging__"
+    
     def __init__ (self):
         rb.Plugin.__init__ (self)
+        self.active=None
         self.current_entry=None
         self.dbcount=0
         self.load_complete=False
@@ -68,6 +74,7 @@ class PlaylistsAutoExportPlugin (rb.Plugin):
         self.current_entries_count=0
         self.previous_entries_count=0
         self.song_entries={}
+        self.sourcescb=[]
         
         Bus.subscribe("__pluging__", "devmode?", self.hq_devmode)
         Bus.subscribe("__pluging__", "appname?", self.hq_appname)
@@ -77,6 +84,7 @@ class PlaylistsAutoExportPlugin (rb.Plugin):
         """
         Called by Rhythmbox when the plugin is activated
         """
+        self.active=True
         self.shell = shell
         self.sp = shell.get_player()
         self.db=self.shell.props.db
@@ -93,11 +101,13 @@ class PlaylistsAutoExportPlugin (rb.Plugin):
         
         self.slcb = (
                      self.sl.connect("drop-received",  self.on_drop_received),
-                     self.sl.connect("selected",       self.on_selected),
+                     #self.sl.connect("selected",       self.on_selected),
                      )
 
         self.plcb = (
-                     self.plm.connect("playlist-added", self.on_playlist_added),
+                     self.plm.connect("playlist-added",   self.on_playlist_added),
+                     self.plm.connect("playlist-created", self.on_playlist_created),
+                     #self.plm.connect("status-changed",   self.on_status_changed),
                      )
         
         ## Distribute the vital RB objects around
@@ -109,6 +119,7 @@ class PlaylistsAutoExportPlugin (rb.Plugin):
         """
         Called by RB when the plugin is about to get deactivated
         """
+        self.active=False
         self.shell = None
         db = shell.props.db
         
@@ -122,10 +133,23 @@ class PlaylistsAutoExportPlugin (rb.Plugin):
             self.plm.disconnect(id)
 
     ## ================================================  rb signal handlers
+    def on_status_changed(self, source):
+        if self.active:
+            Bus.pub(self.BUSNAME, "playlist_changed", source)
+            print "status-changed: %s" % source
+    
     def on_playlist_added(self, manager, source):
+        Bus.pub(self.BUSNAME, "playlist", source)
+        self.sourcescb.append(source.connect("status-changed", self.on_status_changed))
         print "playlist-added: %s" % source
+        
+    def on_playlist_created(self, manager, source):
+        Bus.pub(self.BUSNAME, "playlist_created", source)
+        print "playlist-created: %s" % source
     
     def on_selected(self, sourcelist, source):
+        """ Testing purposes only
+        """
         print "on_selected: %s, %s" % (sourcelist, source)
         ph=PlaylistsHelper(self.shell)
         for l in ph.iter():
@@ -136,8 +160,9 @@ class PlaylistsAutoExportPlugin (rb.Plugin):
                     entry, _path=list(item)
                     print entry
                 
-    def on_drop_received(self, sourcelist, target, data):
-        print "on_drop_received: sl: %s, target: %s, data: %s" % (sourcelist, target, data)
+    def on_drop_received(self, source, target, data):
+        Bus.pub(self.BUSNAME, "playlist_changed", source)
+        print "on_drop_received: sl: %s, target: %s, data: %s" % (source, target, data)
     
     
     def on_load_complete(self, *_):
