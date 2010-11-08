@@ -20,6 +20,7 @@ class EntryHelper(object):
                 ,"playcount":  rhythmdb.PROP_PLAY_COUNT
                 ,"rating":     rhythmdb.PROP_RATING
                 ,"rbid":       rhythmdb.PROP_ENTRY_ID
+                ,"path":       rhythmdb.PROP_LOCATION
              }
     
     @classmethod

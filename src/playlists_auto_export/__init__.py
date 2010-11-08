@@ -48,7 +48,8 @@ base.debug=DEV_MODE
 import system.mswitch as mswitch
 mswitch.observe_mode=MSWITCH_OBSERVE_MODE
 
-#import agents.bridge
+import agents.bridge
+import agents.writer
 
 #import agents._tester
 
@@ -136,7 +137,7 @@ class PlaylistsAutoExportPlugin (rb.Plugin):
     ## ================================================  rb signal handlers
     def on_status_changed(self, source):
         if self.active:
-            Bus.pub(self.BUSNAME, "playlist_changed", source)
+            Bus.pub(self.BUSNAME, "playlist_changed", self.shell, self.db, source)
             print "status-changed: %s" % source.props.name
     
     def on_playlist_added(self, manager, source):
