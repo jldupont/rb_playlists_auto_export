@@ -9,27 +9,28 @@
     Created on 2010-11-07
     @author: jldupont
 """
-from playlists_auto_export.system.base import AgentThreadedBase
+from playlists_auto_export.system.base import AgentThreadedWithEvents
 from playlists_auto_export.helpers.db import EntryHelper
 
-class WriterAgent(AgentThreadedBase):
+class WriterAgent(AgentThreadedWithEvents):
 
+    TIMERS_SPEC=[    
+        ("min", 1, "t_min")
+    ]
+    
     def __init__(self):
-        AgentThreadedBase.__init__(self)
+        AgentThreadedWithEvents.__init__(self)
         self.changed={}
         self.shell=None
         self.db=None
         
-    def h_tick(self, ticks_second, 
-               tick_second, tick_min, tick_hour, tick_day, 
-                sec_count, min_count, hour_count, day_count):
+    def t_min(self, *_):
         """
         Time base - used to rate limit updates to the playlists files on disk
         """
-        if tick_min:
-            for name, source in self.changed.iteritems():
-                self._process(name, source)
-            self.changed={}
+        for name, source in self.changed.iteritems():
+            self._process(name, source)
+        self.changed={}
             
     
     def h_playlist_changed(self, shell, db, source):
@@ -47,7 +48,7 @@ class WriterAgent(AgentThreadedBase):
         for item in source.props.base_query_model:
             dbentry, _id=list(item)
             entry=EntryHelper.track_details2(self.db, dbentry)
-            print entry.path
+            print entry["path"]
 
         
         
