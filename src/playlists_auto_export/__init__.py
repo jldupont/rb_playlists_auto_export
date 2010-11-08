@@ -137,16 +137,16 @@ class PlaylistsAutoExportPlugin (rb.Plugin):
     def on_status_changed(self, source):
         if self.active:
             Bus.pub(self.BUSNAME, "playlist_changed", source)
-            print "status-changed: %s" % source
+            print "status-changed: %s" % source.props.name
     
     def on_playlist_added(self, manager, source):
         Bus.pub(self.BUSNAME, "playlist_added", source)
         self.sourcescb.append(source.connect("status-changed", self.on_status_changed))
-        print "playlist-added: %s" % source
+        print "playlist-added: %s" % source.props.name
         
     def on_playlist_created(self, manager, source):
         Bus.pub(self.BUSNAME, "playlist_created", source)
-        print "playlist-created: %s" % source
+        print "playlist-created: %s" % source.props.name
     
     def on_selected(self, sourcelist, source):
         """ Testing purposes only
@@ -163,7 +163,7 @@ class PlaylistsAutoExportPlugin (rb.Plugin):
                 
     def on_drop_received(self, source, target, data):
         Bus.pub(self.BUSNAME, "playlist_changed", source)
-        print "on_drop_received: sl: %s, target: %s, data: %s" % (source, target, data)
+        print "on_drop_received: sl: %s, target: %s, data: %s" % (source.props.name, target, data)
     
     
     def on_load_complete(self, *_):
