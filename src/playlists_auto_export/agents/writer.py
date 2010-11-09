@@ -18,7 +18,7 @@ from playlists_auto_export.helpers.m3u import M3Uwriter
 
 class WriterAgent(AgentThreadedWithEvents):
 
-    BASE_PATH="~/Music"
+    BASE_PATH="~/Music/rb"
 
     TIMERS_SPEC=[    
         ("min", 1, "t_min")
@@ -29,6 +29,12 @@ class WriterAgent(AgentThreadedWithEvents):
         self.changed={}
         self.shell=None
         self.db=None
+        
+        try:
+            p=os.path.expanduser(self.BASE_PATH)
+            os.makedirs(p)
+        except:
+            pass
         
     def t_min(self, *_):
         """
@@ -60,11 +66,16 @@ class WriterAgent(AgentThreadedWithEvents):
                 p=urllib.unquote(entry["path"]).decode("utf8")
                 items.append(p)
             except Exception,e:
-                print "! unable to decode 'path' for entry: %s" % entry #entry["path"]
+                print "! unable to decode 'file location' for entry: %s" % entry
                 return
             
             try:
                 path=os.path.join(self.BASE_PATH, name)+".m3u"
+            except:
+                print "! Issue with building filesystem path for playlist name: %s" % name
+                return
+            
+            try:
                 w=M3Uwriter(path)
                 w.write(items)
             except Exception,e:

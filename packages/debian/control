@@ -1,0 +1,14 @@
+Source: rb-playlists-auto-export
+Priority: optional
+Section: devel
+Build-Depends: python (>= 2.5), debhelper (>= 7), python-support (>= 0.5.3), python-setuptools
+Standards-Version: 3.8.0
+Maintainer: Jean-Lou Dupont <jl@jldupont.com>
+Homepage: http://www.systemical.com/
+
+Package: rb-playlists-auto-export
+Architecture: all
+Depends: rhythmbox(>= 0.12.5), python (>= 2.5), ${misc:Depends}, ${python:Depends}
+Description: Rhythmbox plugin for automatically exporting playlists in the ~/Music/rb folder in .m3u format.
+ For more details, please see http://github.com/jldupont/rb_playlists_auto_export
+ .
