@@ -60,7 +60,7 @@ class WriterAgent(AgentThreadedWithEvents):
                 p=urllib.unquote(entry["path"]).decode("utf8")
                 items.append(p)
             except Exception,e:
-                print "! unable to decode 'path' for entry: %s" % entry["path"]
+                print "! unable to decode 'path' for entry: %s" % entry #entry["path"]
                 return
             
             try:
