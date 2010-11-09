@@ -8,10 +8,11 @@
 ## <<< CUSTOMIZE HERE
 PRJ=rb_playlists_auto_export
 PKG=rb-playlists-auto-export
-DOC=http://www.systemical.com/doc/opensource/rb_playlists_auto_export
+DOC=http:\/\/www.systemical.com\/doc\/opensource\/rb_playlists_auto_export
 ## >>>
 
 VERSION:=`cat VERSION`
+DATE=`date +'%a, %d %B %Y %T %z'`
 
 DEFAULT_DISTRO=lucid
 
@@ -47,11 +48,12 @@ orig:
 	@cp VERSION "/tmp/$(PRJ)/${DIST}/VERSION"
 		
 	@echo "Adjusting debian/changelog to DIST & VERSION"
-	@cat packages/debian/changelog | sed "s/_DIST_/${DIST}/g" | sed "s/_VERSION_/${VERSION}/g | sed "s/_PRJ_/${PRJ}/g" > "/tmp/${PRJ}/${DIST}/${PRJ}-${VERSION}/debian/changelog"
+	@cat packages/debian/changelog | sed "s/_DIST_/${DIST}/g" | sed "s/_VERSION_/${VERSION}/g" | sed "s/_PRJ_/${PRJ}/g" | sed "s/_DATE_/${DATE}/g" > "/tmp/${PRJ}/${DIST}/${PRJ}-${VERSION}/debian/changelog"
+
 	@echo "Adjusting debian/control to DIST & VERSION"
-	@cat packages/debian/control   | sed "s/_DIST_/${DIST}/g" | sed "s/_VERSION_/${VERSION}/g | sed "s/_PRJ_/${PRJ}/g | sed "s/_PKG_/${PKG}/g | sed "s/_DOC_/${DOC}/g" > "/tmp/${PRJ}/${DIST}/${PRJ}-${VERSION}/debian/control"
+	@cat packages/debian/control   | sed "s/_DIST_/${DIST}/g" | sed "s/_VERSION_/${VERSION}/g" | sed "s/_PRJ_/${PRJ}/g" | sed "s/_PKG_/${PKG}/g" | sed "s/_DOC_/${DOC}/g" | sed "s/_DATE_/${DATE}/g" > "/tmp/${PRJ}/${DIST}/${PRJ}-${VERSION}/debian/control"		
 	
-	@echo "** SUCCESS: folder ready: /tmp/$(PRJ)"
+	@echo "** SUCCESS: folder ready: /tmp/$(PRJ)/${DIST}"
 	@echo "*** DON'T FORGET TO UPDATE debian/changelog ***"
 
 	@echo "!!! Have you updated debian/changelog ?"
