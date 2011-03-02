@@ -11,3 +11,9 @@ There are 3 methods:
 3. Use the "Download Source" function of this git repo and place the "playlists-auto-export" folder in "~/.gnome2/rhythmbox/plugins
 
 Note that option #3 isn't preferred as one might get an "unstable" snapshot. 
+
+
+History
+=======
+
+0.2 : added mounting point remapping i.e. no more find and replace to adjust resulting files
