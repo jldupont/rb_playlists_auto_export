@@ -64,22 +64,28 @@ class WriterAgent(AgentThreadedWithEvents):
             
             try:
                 p=urllib.unquote(entry["path"]).decode("utf8")
-                items.append(p)
+                
             except Exception,e:
                 print "! unable to decode 'file location' for entry: %s" % entry
-                return
+                continue
+        
+            ### clean up the "file://" and "smb:" prefixes
+            p=p.replace("file://","").replace("smb:", "")
             
-            try:
-                path=os.path.join(self.BASE_PATH, name)+".m3u"
-            except:
-                print "! Issue with building filesystem path for playlist name: %s" % name
-                return
+            ### Add the item to the list
+            items.append(p)
             
-            try:
-                w=M3Uwriter(path)
-                w.write(items)
-            except Exception,e:
-                print "! Issue (%s) whilst writing .m3u file to path: %s" % (e, path)
+        try:
+            path=os.path.join(self.BASE_PATH, name)+".m3u"
+        except:
+            print "! Issue with building filesystem path for playlist name: %s" % name
+            return
+        
+        try:
+            w=M3Uwriter(path)
+            w.write(items)
+        except Exception,e:
+            print "! Issue (%s) whilst writing .m3u file to path: %s" % (e, path)
             
 
         
